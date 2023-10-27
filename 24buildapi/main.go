@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"math/rand"
 	"net/http"
 	"strconv"
@@ -14,7 +15,7 @@ import (
 type Course struct {
 	CourseId    string  `json:"courseid"`
 	CourseName  string  `json:"coursename"`
-	CoursePrice int     `json:"price"`
+	CoursePrice int     `json:"-"`
 	Author      *Author `json:"author"`
 }
 
@@ -33,7 +34,23 @@ func (c *Course) IsEmpty() bool {
 }
 
 func main() {
+	fmt.Println("Learn golang")
+	r := mux.NewRouter()
 
+	//seeding
+	courses = append(courses, Course{CourseId: "2", CourseName: "react js", CoursePrice: 299, Author: &Author{Fullname: "Mahir", Website: "mahir.com"}})
+	courses = append(courses, Course{CourseId: "4", CourseName: "MERN ", CoursePrice: 199, Author: &Author{Fullname: "Mohi", Website: "mohi.com"}})
+
+	// routing
+	r.HandleFunc("/", serveHome).Methods("GET")
+	r.HandleFunc("/courses", getAllCourses).Methods("GET")
+	r.HandleFunc("/course/{id}", getOneCourse).Methods("GET")
+	r.HandleFunc("/course", CreateOneCourse).Methods("POST")
+	r.HandleFunc("/course/{id}", updateOneCourse).Methods("PUT")
+	r.HandleFunc("/course/{id}", deleteOneCourse).Methods("DELETE")
+
+	// listening to the port
+	log.Fatal(http.ListenAndServe(":4000", r))
 }
 
 // controllers - file
@@ -117,7 +134,7 @@ func updateOneCourse(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func deleteOneCourse() {
+func deleteOneCourse(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("delete one course")
 	w.Header().Set("Content-Type", "application/json")
 
@@ -127,7 +144,9 @@ func deleteOneCourse() {
 	for index, course := range courses {
 		if course.CourseId == params["id"] {
 			courses = append(courses[:index], courses[index+1:]...)
-			break
+			return
 		}
 	}
+
+	fmt.Println("course not found which to be deleted")
 }
