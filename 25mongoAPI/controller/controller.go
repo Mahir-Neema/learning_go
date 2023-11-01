@@ -14,11 +14,12 @@ const connectionString = "mongodb+srv://mahirneema6:N5xKAjBsmXAPSJeq@cluster1.ev
 const dbName = "netflix"
 const colName = "watchlist"
 
-// imp
+// imp refrence of mongodb collection
 var collection *mongo.Collection
 
 // connect with mongoDB
 
+// / init only runs when applications is started
 func init() {
 	// client options
 	clientOption := options.Client().ApplyURI(connectionString)
@@ -36,4 +37,33 @@ func init() {
 
 	// collection instance
 	fmt.Println("collection instance is ready")
+}
+
+// insert 1 record
+
+func insertOneMovie(movie model.Netflix) {
+	inserted, err := collection.InsertOne(context.Background(), movie)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Inserted 1 movie in db with ids: ", inserted.InsertedID)
+}
+
+// update 1 record
+
+func updateOneMovie(movieId string) {
+	id, _ = primitive.ObjectIDFromHex(movieId)
+	filter := bson.M{"_id": id}
+	update := bson.M{"$set": bson.M{"watched": true}}
+
+	result, err := collection.UpdateOne(context.Background(), filter, update)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("modified count: ", result.ModifiedCount)
+
 }
