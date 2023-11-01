@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const connectionString = "mongodb+srv://mahirneema6:N5xKAjBsmXAPSJeq@cluster1.evpa69u.mongodb.net/?retryWrites=true&w=majority"
+const connectionString = "url"
 
 const dbName = "netflix"
 const colName = "watchlist"
